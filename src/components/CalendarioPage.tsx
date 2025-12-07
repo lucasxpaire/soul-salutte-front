@@ -33,16 +33,27 @@ const CalendarioPage: React.FC<CalendarioPageProps> = ({ onAddSessao, onEditSess
   const [filterView, setFilterView] = useState<FilterType>('week');
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const [sessoesData, clientesData] = await Promise.all([
-        getSessoes(),
-        getClientes(),
-      ]);
-      setSessoes(sessoesData);
-      setClientes(clientesData);
-    } catch (error) {
-      toast.error('Erro ao carregar agendamentos.');
+      // Carregar sessões
+      try {
+        const sessoesData = await getSessoes();
+        console.log("Sessões carregadas:", sessoesData);
+        setSessoes(sessoesData);
+      } catch (e) {
+        console.error("Erro ao carregar sessões", e);
+        toast.error('Erro ao carregar sessões.');
+      }
+
+      // Carregar clientes
+      try {
+        const clientesData = await getClientes();
+        console.log("Clientes carregados:", clientesData);
+        setClientes(clientesData);
+      } catch (e) {
+        console.error("Erro ao carregar clientes", e);
+        toast.error('Erro ao carregar lista de clientes.');
+      }
     } finally {
       setLoading(false);
     }
@@ -183,8 +194,10 @@ const CalendarioPage: React.FC<CalendarioPageProps> = ({ onAddSessao, onEditSess
                               <span className="text-muted-foreground text-sm">- {format(parseISO(sessao.dataHoraFim), 'HH:mm')}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              {/* Garantindo acesso ao mapa também via String */}
-                              <h3 className="font-semibold text-lg">{clienteMap.get(String(sessao.clienteId)) || 'Cliente Desconhecido'}</h3>
+                              {/* Garantindo acesso ao mapa também via String e mostrando ID se falhar */}
+                              <h3 className="font-semibold text-lg">
+                                {clienteMap.get(String(sessao.clienteId)) || `Cliente não encontrado (ID: ${sessao.clienteId})`}
+                              </h3>
                             </div>
                             {sessao.notasSessao && (
                               <p className="text-sm text-muted-foreground line-clamp-1">{sessao.notasSessao}</p>

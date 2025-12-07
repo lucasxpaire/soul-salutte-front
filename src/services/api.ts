@@ -9,13 +9,13 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 }, error => {
-    return Promise.reject(error);
+  return Promise.reject(error);
 });
 
 
@@ -40,25 +40,33 @@ export const deleteCliente = (id: number): Promise<void> => {
   return apiClient.delete(`/clientes/${id}`);
 };
 
+// Função auxiliar para normalizar dados da sessão (garantir clienteId)
+const normalizeSessao = (data: any): Sessao => {
+  return {
+    ...data,
+    clienteId: data.clienteId || data.cliente_id || (data.cliente && data.cliente.id),
+  };
+};
+
 // Funções para Sessões
 export const getSessoes = (): Promise<Sessao[]> => {
-  return apiClient.get('/sessoes').then(res => res.data);
+  return apiClient.get('/sessoes').then(res => res.data.map(normalizeSessao));
 };
 
 export const getSessoesByClienteId = (clienteId: number): Promise<Sessao[]> => {
-    return apiClient.get(`/sessoes/cliente/${clienteId}`).then(res => res.data);
+  return apiClient.get(`/sessoes/cliente/${clienteId}`).then(res => res.data.map(normalizeSessao));
 };
 
 export const createSessao = (sessao: Omit<Sessao, 'id'>): Promise<Sessao> => {
-    return apiClient.post(`/sessoes/cliente/${sessao.clienteId}`, sessao).then(res => res.data);
+  return apiClient.post(`/sessoes/cliente/${sessao.clienteId}`, sessao).then(res => normalizeSessao(res.data));
 };
 
 export const updateSessao = (id: number, sessao: Partial<Sessao>): Promise<Sessao> => {
-    return apiClient.put(`/sessoes/${id}`, sessao).then(res => res.data);
+  return apiClient.put(`/sessoes/${id}`, sessao).then(res => normalizeSessao(res.data));
 };
 
 export const deleteSessao = (id: number): Promise<void> => {
-    return apiClient.delete(`/sessoes/${id}`);
+  return apiClient.delete(`/sessoes/${id}`);
 };
 
 // Funções para Avaliações
@@ -67,19 +75,19 @@ export const getAvaliacoesByCliente = (clienteId: number): Promise<AvaliacaoFisi
 };
 
 export const createAvaliacao = (avaliacao: Omit<AvaliacaoFisioterapeutica, 'id'>): Promise<AvaliacaoFisioterapeutica> => {
-    return apiClient.post(`/avaliacoes/cliente/${avaliacao.clienteId}`, avaliacao).then(res => res.data);
+  return apiClient.post(`/avaliacoes/cliente/${avaliacao.clienteId}`, avaliacao).then(res => res.data);
 };
 
 export const updateAvaliacao = (id: number, avaliacao: Partial<AvaliacaoFisioterapeutica>): Promise<AvaliacaoFisioterapeutica> => {
-    return apiClient.put(`/avaliacoes/${id}`, avaliacao).then(res => res.data);
+  return apiClient.put(`/avaliacoes/${id}`, avaliacao).then(res => res.data);
 };
 
 export const deleteAvaliacao = (id: number): Promise<void> => {
-    return apiClient.delete(`/avaliacoes/${id}`);
+  return apiClient.delete(`/avaliacoes/${id}`);
 };
 
 export const adicionarEvolucao = (avaliacaoId: number, texto: string): Promise<AvaliacaoFisioterapeutica> => {
-    return apiClient.post(`/avaliacoes/${avaliacaoId}/evolucoes`, { evolucao: texto }).then(res => res.data);
+  return apiClient.post(`/avaliacoes/${avaliacaoId}/evolucoes`, { evolucao: texto }).then(res => res.data);
 };
 
 

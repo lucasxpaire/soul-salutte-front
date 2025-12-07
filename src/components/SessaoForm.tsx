@@ -33,10 +33,15 @@ const FormSection: React.FC<{ title: string; icon: React.ElementType; children: 
 const SessaoForm: React.FC<SessaoFormProps> = ({ isOpen, onClose, sessao, initialDate, initialClienteId, onSave }) => {
   const [formData, setFormData] = useState<Partial<Sessao>>({});
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loadingClientes, setLoadingClientes] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      getClientes().then(setClientes).catch(() => toast.error("Falha ao carregar clientes."));
+      setLoadingClientes(true);
+      getClientes()
+        .then(setClientes)
+        .catch(() => toast.error("Falha ao carregar clientes."))
+        .finally(() => setLoadingClientes(false));
 
       if (sessao) {
         setFormData({
@@ -111,13 +116,14 @@ const SessaoForm: React.FC<SessaoFormProps> = ({ isOpen, onClose, sessao, initia
               <div className="space-y-2">
                 <Label htmlFor="clienteId">Cliente</Label>
                 <Select
+                  disabled={loadingClientes}
                   value={formData.clienteId ? String(formData.clienteId) : ''}
                   onValueChange={value => handleChange('clienteId', Number(value))}
                 >
                   <SelectTrigger>
                     <div className='flex items-center'>
                       <User className="w-4 h-4 mr-2 text-muted-foreground" />
-                      <SelectValue placeholder="Selecione um cliente" />
+                      <SelectValue placeholder={loadingClientes ? "Carregando clientes..." : "Selecione um cliente"} />
                     </div>
                   </SelectTrigger>
                   <SelectContent>

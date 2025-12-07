@@ -76,7 +76,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
               placeholder="Buscar por nome..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-gray-50/50 focus:bg-white border-gray-100"
             />
           </div>
         </CardContent>
@@ -85,8 +85,8 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
       {/* Lista de Clientes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {clientes.map((cliente) => (
-          <Card 
-            key={cliente.id} 
+          <Card
+            key={cliente.id}
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => onSelectCliente(cliente)}
           >
@@ -103,17 +103,17 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
                 <Mail className="w-4 h-4 mr-2" />
                 <span className="truncate">{cliente.email}</span>
               </div>
-              
+
               <div className="flex items-center text-sm text-muted-foreground">
                 <Phone className="w-4 h-4 mr-2" />
                 <span>{formatarTelefone(cliente.telefone)}</span>
               </div>
-              
+
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4 mr-2" />
                 <span>{cliente.bairro}, {cliente.cidade}</span>
               </div>
-              
+
               <div className="flex justify-between items-center pt-2 border-t">
                 <span className="text-sm text-muted-foreground">
                   {calcularIdade(cliente.dataNascimento)} anos
@@ -122,7 +122,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
                   {cliente.profissao}
                 </span>
               </div>
-              
+
               <div className="text-xs text-muted-foreground">
                 Cadastrado em {cliente.dataCadastro ? new Date(cliente.dataCadastro).toLocaleDateString('pt-BR') : 'Data não informada'}
               </div>
@@ -137,9 +137,9 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
             <p className="text-muted-foreground">
               Nenhum cliente encontrado.
             </p>
-            <Button 
-              onClick={onAddCliente} 
-              variant="outline" 
+            <Button
+              onClick={onAddCliente}
+              variant="outline"
               className="mt-4"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -150,7 +150,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
       )}
 
       {/* Estatísticas */}
-{/*       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/*       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-secondary text-secondary-foreground">
           <CardContent className="pt-6">
             <div className="text-2xl font-bold">{mockClientes.length}</div>
