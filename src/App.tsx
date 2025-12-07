@@ -38,7 +38,7 @@ const AppContent: React.FC = () => {
   const [avaliacaoClienteId, setAvaliacaoClienteId] = useState<number>(0);
   const [initialSessaoDate, setInitialSessaoDate] = useState<Date>(new Date());
   const [initialClienteId, setInitialClienteId] = useState<number | undefined>(undefined); // Novo estado
-  
+
   const [editingAvaliacao, setEditingAvaliacao] = useState<AvaliacaoFisioterapeutica | undefined>(undefined);
 
   const forceRefresh = () => setRefreshKey(prev => prev + 1);
@@ -77,7 +77,7 @@ const AppContent: React.FC = () => {
     if (selectedCliente) {
       // Atualiza os dados do cliente selecionado se ele estiver sendo editado
       if (editingCliente && selectedCliente.id === editingCliente.id) {
-          setSelectedCliente(editingCliente);
+        setSelectedCliente(editingCliente);
       }
     } else {
       setCurrentPage('clientes');
@@ -180,7 +180,7 @@ const AppContent: React.FC = () => {
           />
         ) : null;
 
-      case 'calendario':
+      case 'agendamentos':
         return <CalendarioPage key={refreshKey} onAddSessao={handleAddSessao} onEditSessao={handleEditSessao} />;
 
       case 'avaliacoes':

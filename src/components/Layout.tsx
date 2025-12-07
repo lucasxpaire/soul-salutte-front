@@ -1,24 +1,14 @@
 import React from 'react';
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarInset,
-} from '@/components/ui/sidebar';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  Settings, 
+  LayoutDashboard,
+  Users,
+  Calendar,
   LogOut,
   Heart,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,96 +31,73 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onNavigate }) =>
       icon: Users,
     },
     {
-      id: 'calendario',
-      title: 'Calendário',
+      id: 'agendamentos',
+      title: 'Agendamentos',
       icon: Calendar,
     }
   ];
 
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="justify-start">
-                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Heart className="size-5" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold text-lg">Soul Saluttē</span>
-                  <span className="truncate text-xs text-muted-foreground">Fisioterapia</span>
-                </div>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-        
-        <SidebarContent>
-          <SidebarMenu>
-            {menuItems.map((item) => (
-              <SidebarMenuItem key={item.id} tooltip={item.title}>
-                <SidebarMenuButton 
-                  onClick={() => onNavigate(item.id)}
-                  isActive={currentPage === item.id}
-                  className="h-12"
-                >
-                  <item.icon className="size-5" />
-                  <span className="truncate font-medium">{item.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem tooltip="Configurações">
-              <SidebarMenuButton className="h-12">
-                <Settings className="size-5" />
-                <span>Configurações</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem tooltip="Sair">
-              <SidebarMenuButton onClick={logout} className="h-12 text-red-500 hover:bg-red-500/10 hover:text-red-600">
-                <LogOut className="size-5" />
-                <span>Sair</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <div className="w-full border-t border-sidebar-border my-2" />
-            </SidebarMenuItem>
-            <SidebarMenuItem tooltip={user?.name || 'Usuário'}>
-              <SidebarMenuButton className="h-14">
-                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-                  <span className="text-lg font-medium">
-                    {user?.name?.charAt(0) || 'U'}
-                  </span>
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user?.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {user?.email}
-                  </span>
-                </div>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            <div className="text-sm font-medium capitalize">
-              {menuItems.find(item => item.id === currentPage)?.title || 'Soul Saluttē'}
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-50 w-full border-b bg-white">
+        <div className="flex h-16 items-center px-6">
+          {/* Logo Section */}
+          <div className="flex items-center gap-2 mr-8">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Heart className="size-5" />
             </div>
-        </header>
-        
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-bold text-lg">Soul Saluttē</span>
+            </div>
+          </div>
+
+          {/* Navigation Section - Center */}
+          <nav className="flex items-center space-x-4 lg:space-x-6 mx-6 flex-1">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.id)}
+                className={cn(
+                  "flex items-center text-sm font-medium transition-colors hover:text-primary",
+                  currentPage === item.id
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                )}
+              >
+                <item.icon className="mr-2 size-4" />
+                {item.title}
+              </button>
+            ))}
+          </nav>
+
+          {/* User & Actions Section - Right */}
+          <div className="ml-auto flex items-center space-x-4">
+            <div className="text-right hidden md:block">
+              <p className="text-sm font-medium leading-none">{user?.name}</p>
+              <p className="text-xs text-muted-foreground">{user?.email}</p>
+            </div>
+            <div className="h-8 w-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-medium">
+              {user?.name?.charAt(0) || 'U'}
+            </div>
+            <div className="flex items-center ml-2 border-l pl-2 space-x-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                title="Sair"
+              >
+                <LogOut className="size-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 p-6 container mx-auto max-w-7xl">
+        {children}
+      </main>
+    </div>
   );
 };
 

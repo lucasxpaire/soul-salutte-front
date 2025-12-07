@@ -8,7 +8,6 @@ import { format, isToday, startOfMonth, endOfMonth, isWithinInterval } from 'dat
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { ContinuousCalendar } from './ContinuousCalendar'; 
 
 interface DashboardProps {
   onAddSessao: () => void;
@@ -25,7 +24,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onAddSessao }) => {
   const { user } = useAuth();
   const [sessoes, setSessoes] = useState<Sessao[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [totalAvaliacoes, setTotalAvaliacoes] = useState(0);
+  const [totalAvaliacoes] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,13 +47,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onAddSessao }) => {
   const memoizedStats = useMemo(() => {
     const sessoesHoje = sessoes.filter(sessao => isToday(new Date(sessao.dataHoraInicio)));
     const sessoesAgendadas = sessoes.filter(sessao => new Date(sessao.dataHoraInicio) >= new Date() && sessao.status === 'AGENDADA');
-    
+
     const sessoesEsteMes = sessoes.filter(sessao => {
-        const today = new Date();
-        return isWithinInterval(new Date(sessao.dataHoraInicio), {
-            start: startOfMonth(today),
-            end: endOfMonth(today)
-        });
+      const today = new Date();
+      return isWithinInterval(new Date(sessao.dataHoraInicio), {
+        start: startOfMonth(today),
+        end: endOfMonth(today)
+      });
     });
 
     return {
@@ -128,17 +127,21 @@ const Dashboard: React.FC<DashboardProps> = ({ onAddSessao }) => {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Agenda do Dia</CardTitle>
-            <CardDescription>
-              {format(new Date(), "eeee, dd 'de' MMMM", { locale: ptBR })}
-            </CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Agenda do Dia</CardTitle>
+                <CardDescription>
+                  {format(new Date(), "eeee, dd 'de' MMMM", { locale: ptBR })}
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {memoizedStats.sessoesHoje.length > 0 ? (
                 memoizedStats.sessoesHoje
-                .sort((a,b) => new Date(a.dataHoraInicio).getTime() - new Date(b.dataHoraInicio).getTime())
-                .map((sessao) => (
+                  .sort((a, b) => new Date(a.dataHoraInicio).getTime() - new Date(b.dataHoraInicio).getTime())
+                  .map((sessao) => (
                     <div key={sessao.id} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
                       <div className={`w-1.5 h-10 rounded-full ${getStatusProps(sessao.status).color}`}></div>
                       <div className="flex-1">
@@ -153,22 +156,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onAddSessao }) => {
                   ))
               ) : (
                 <div className="text-center py-10">
-                    <CalendarDays className="mx-auto h-12 w-12 text-gray-300" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhuma sessão hoje</h3>
-                    <p className="mt-1 text-sm text-gray-500">Aproveite para organizar sua semana.</p>
+                  <CalendarDays className="mx-auto h-12 w-12 text-gray-300" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhuma sessão hoje</h3>
+                  <p className="mt-1 text-sm text-gray-500">Aproveite para organizar sua semana ou adicionar um novo agendamento.</p>
                 </div>
               )}
             </div>
           </CardContent>
-        </Card>
-        
-        <Card className="h-[550px] flex flex-col">
-            <CardHeader>
-                <CardTitle>Calendário Anual</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-hidden">
-                <ContinuousCalendar onAddEventClick={onAddSessao} sessoes={sessoes} />
-            </CardContent>
         </Card>
       </div>
     </div>
