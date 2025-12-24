@@ -18,8 +18,6 @@ apiClient.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
-
-// Funções para Clientes
 export const getClientes = (nome?: string): Promise<Cliente[]> => {
   return apiClient.get('/clientes', { params: { nome } }).then(res => res.data);
 };
@@ -40,7 +38,6 @@ export const deleteCliente = (id: number): Promise<void> => {
   return apiClient.delete(`/clientes/${id}`);
 };
 
-// Função auxiliar para normalizar dados da sessão (garantir clienteId)
 const normalizeSessao = (data: any): Sessao => {
   return {
     ...data,
@@ -48,7 +45,6 @@ const normalizeSessao = (data: any): Sessao => {
   };
 };
 
-// Funções para Sessões
 export const getSessoes = (): Promise<Sessao[]> => {
   return apiClient.get('/sessoes').then(res => res.data.map(normalizeSessao));
 };
@@ -69,7 +65,6 @@ export const deleteSessao = (id: number): Promise<void> => {
   return apiClient.delete(`/sessoes/${id}`);
 };
 
-// Funções para Avaliações
 export const getAvaliacoesByCliente = (clienteId: number): Promise<AvaliacaoFisioterapeutica[]> => {
   return apiClient.get(`/avaliacoes/cliente/${clienteId}`).then(res => res.data);
 };
